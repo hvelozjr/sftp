@@ -1,0 +1,30 @@
+#!/bin/bash
+mkvhost () {
+  if [ -z "$1" ] || [ -z "$2" ]; then
+    printf "\nUsage: mkvhost domain username\n\n"
+    return 0;
+  fi
+  DOMAIN=$1
+  USER=$2
+  mkdir -p /var/www/vhosts/${DOMAIN}/content
+  useradd -m -G sftponly ${USER}
+  usermod -d /home/${USER}/${DOMAIN} -s /bin/false ${USER}
+  mkdir -p /home/${USER}/${DOMAIN}/content
+  sed s/example.com/${DOMAIN}/g /etc/httpd/vhost.d/default.template > /etc/httpd/vhost.d/${DOMAIN}.conf
+  chown -R root:root /home/${USER}/
+  chmod -R 755 /home/${USER}/
+  chown -R apache:${USER} /var/www/vhosts/${DOMAIN}/content/
+  chmod -R 2775 /var/www/vhosts/${DOMAIN}/content/
+  echo
+  echo "/var/www/vhosts/${DOMAIN}/content  /home/${USER}/${DOMAIN}/content   none   rw,bind 0 0" >> /etc/fstab
+  mount /home/${USER}/${DOMAIN}/content
+  echo "********************"
+  echo ">> Username: ${USER}"
+  echo ">> Domain: ${DOMAIN}"
+  echo ">> Alias: www.${DOMAIN}"
+  echo ">> Document Root: /var/www/vhosts/${DOMAIN}/content"
+  echo "********************"
+  echo
+  service httpd reload > /dev/null 2>&1
+  passwd $USER
+}
