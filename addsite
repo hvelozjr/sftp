@@ -1,13 +1,7 @@
 #!/bin/bash
 mkvhost () {
-  if [ -z "$1" ] || [ -z "$2" ]; then
-    printf "\nUsage: mkvhost domain username\n\n"
-    return 0;
-  fi
-  DOMAIN=$1
-  USER=$2
   useradd -m -G sftponly ${USER}
-  usermod -d /home/${USER}/${DOMAIN} -s /bin/false ${USER}
+  usermod -d /home/${USER}/content -s /bin/false ${USER}
   mkdir -p /home/${USER}/content
   chown -R root:root /home/${USER}/
   chmod -R 755 /home/${USER}/
@@ -15,15 +9,21 @@ mkvhost () {
   chmod -R 2775 ${DOMAIN}
   echo
   echo "${DOMAIN}  /home/${USER}/content   none   rw,bind 0 0" >> /etc/fstab
-  mount /home/${USER}/${DOMAIN}/content
+  mount /home/${USER}/content
   echo "********************"
   echo ">> Username: ${USER}"
-  echo ">> Domain Path: ${DOMAIN}"
   echo ">> Document Root:${DOMAIN}"
   echo "********************"
   echo
   passwd $USER
 }
 
+if [ -z "$1" ] || [ -z "$2" ]; then
+   printf "\nUsage: mkvhost domain username\n\n"
+   return 0;
+fi
 
-mkvhost
+DOMAIN=$1
+USER=$2
+
+mkvhost 
