@@ -10,6 +10,7 @@ mkvhost () {
   useradd -m -G sftponly ${USER}
   usermod -d /home/${USER}/${DOMAIN} -s /bin/false ${USER}
   mkdir -p /home/${USER}/${DOMAIN}/content
+  sed s/example.com/${DOMAIN}/g /etc/httpd/vhost.d/default.template > /etc/httpd/vhost.d/${DOMAIN}.conf
   chown -R root:root /home/${USER}/
   chmod -R 755 /home/${USER}/
   chown -R apache:${USER} /var/www/vhosts/${DOMAIN}/content/
