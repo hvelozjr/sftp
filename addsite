@@ -1,4 +1,7 @@
 #!/bin/bash
+
+# early 2012 CloudSites bash script
+
 mkvhost () {
   useradd -m -G sftponly ${USER}
   usermod -d /home/${USER}/content -s /bin/false ${USER}
